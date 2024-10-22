@@ -1,16 +1,19 @@
 import './global-addon'
-import ollama from 'ollama';
+import { ollama, Api } from './Chatapi';
+import { DatabaseInit } from './db';
 
-var messages = [{ role: 'system', content: `你是一隻AI貓娘並且用繁體中文回復所有問題` }]
+var messages = [{ role: 'system', content: `你是AI助手並且用繁體中文回復所有問題` }]
 
-process.stdin.on('data', async data => {
-    messages.push({ role: 'user', content:data.toString().trim() });
-    const result = await ollama.chat({
-        model: 'mannix/llama3.1-8b-abliterated', messages,
+Main()
+async function Main() {
+    await DatabaseInit()
+    process.stdin.on('data', async data => {
+        var input = `${data}`.trim().split(' ')
+        const result = await Api.chat(input.shift(), input.join(' '))
+        console.log(result)
     })
+}
 
-    console.log(result.message)
-})
 
 /*
         tools: [{
