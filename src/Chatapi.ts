@@ -15,7 +15,7 @@ export class Api {
     static async start(id: string, text = '你是AI助手並且用繁體中文回復所有問題') {
         var chat = await db.Chat.FindUpsert({ id, model }, { id })
         if (chat.messages && chat.messages.length != 0) return chat
-        var msg = await db.ChatMessage.save({ role: 'system', content: `${text}`.trim(), id: chat.messages.length ?? 0 })
+        var msg = await db.ChatMessage.save({ role: 'system', content: `${text}`.trim(), id: chat.messages?.length ?? 0 })
         chat.messages = [msg]
         return await chat.save()
     }

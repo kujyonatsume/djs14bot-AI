@@ -1,4 +1,5 @@
 import { randomInt } from 'crypto';
+import { Client, Emoji, Message, User } from 'discord.js';
 
 declare global {
     interface Array<T> {
@@ -10,18 +11,14 @@ declare global {
     interface PromiseConstructor {
         delay(ms: number): Promise<void>
     }
-    interface Console {
-        input(): Promise<string>
-    }
 }
 
-console.input = () => new Promise<string>(resolve => process.stdin.once('data', data => resolve(data.toString().trim())))
 Math.randomInt = randomInt
 Promise.delay = (ms: number) => new Promise<void>(resolve => setTimeout(resolve, ms))
 Array.prototype.groupBy = function <T>(this: T[], fn: (v: T, i: number) => PropertyKey) {
     return Object.groupBy(this, fn)
 }
-/*
+
 declare module "discord.js" {
     export interface EventFunc {
         init(): Awaited<Promise<any>>;
@@ -46,6 +43,14 @@ declare module "discord.js" {
         userUpdate?(oldUser: User | PartialUser, newUser: User): Awaited<Promise<any>>;
         voiceStateUpdate?(oldState: VoiceState, newState: VoiceState): Awaited<Promise<any>>;
     }
-
+    export interface Message {
+        emojiParse(): void;
+        emojis: Emoji[];
+    }
 }
-*/
+Object.defineProperty(Message.prototype, "emojiParse", {
+    value(this: Message) {
+        this.emojis = [...this.content.matchAll(/<?(a:)?(\w{2,32}):(\d{17,19})>?/)]
+            .map(x => new Emoji(this.client, { animated: Boolean(x[1]), name: x[2], id: x[3] }));
+    }
+})

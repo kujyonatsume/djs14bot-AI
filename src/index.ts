@@ -1,17 +1,15 @@
 import './global-addon'
 import { ollama, Api } from './Chatapi';
 import { DatabaseInit } from './db';
-
+import { DiscordStart } from './discord';
+import config from "./config";
 var messages = [{ role: 'system', content: `你是AI助手並且用繁體中文回復所有問題` }]
 
 Main()
 async function Main() {
     await DatabaseInit()
-    while (true) {
-        var input = (await console.input()).split(' ')
-        const result = await Api.Func(input.join(' '))
-        console.log(result)
-    }
+    await DiscordStart(config.token2)
+
 }
 
 /*

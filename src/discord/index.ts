@@ -14,12 +14,12 @@ export async function DiscordStart(token: string, guildId?: string) {
             modules.set(key.toLowerCase(), mod)
             await mod.init()
         }
-        console.log(`${c.user.username} 初始化完成`)
         let size = (await c.application.commands.set((commands as any).filter((x: { only: any; }) => !x.only))).size
         if (c.guilds.cache.has(guildId))
             size += (await c.application.commands.set((commands as any).filter((x: { only: any; }) => x.only), guildId)).size
         console.log(`已註冊 ${size} 個模組 總共 ${count} 個指令`)
 
+        console.log(`${c.user.username} 初始化完成`)
         c.on("interactionCreate", async interaction => {
 
             if (interaction.isAutocomplete()) {
@@ -64,7 +64,7 @@ export async function DiscordStart(token: string, guildId?: string) {
                 }
                 return {
                     subOptions: (<any>command.options as IOption[]),
-                    module: modules.get(interaction.commandName),
+                    module: modules.get(command.className.toLowerCase()),
                     command
                 }
             }
