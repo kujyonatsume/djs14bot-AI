@@ -1,7 +1,6 @@
 import { AttachmentBuilder, Client, codeBlock, Collection, EmbedBuilder, inlineCode, Interaction, Routes, TextChannel } from "discord.js";
 import * as AppModule from "./Commands";
 import { commands, IOption, count, OptionAnd, Module } from "./decorator";
-import { db } from "../db";
 
 const modules = new Collection<string, Module>()
 
@@ -77,7 +76,6 @@ export async function DiscordStart(token: string, guildId?: string) {
                 console.log(e);
             }
         })
-
     })
     await client.login(token)
 }

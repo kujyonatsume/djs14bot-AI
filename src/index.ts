@@ -7,13 +7,12 @@ var messages = [{ role: 'system', content: `你是AI助手並且用繁體中文�
 Main()
 async function Main() {
     await DatabaseInit()
-    process.stdin.on('data', async data => {
-        var input = `${data}`.trim().split(' ')
-        const result = await Api.chat(input.shift(), input.join(' '))
+    while (true) {
+        var input = (await console.input()).split(' ')
+        const result = await Api.Func(input.join(' '))
         console.log(result)
-    })
+    }
 }
-
 
 /*
         tools: [{

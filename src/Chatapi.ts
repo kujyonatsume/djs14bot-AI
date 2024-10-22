@@ -1,8 +1,8 @@
 import { Ollama } from 'ollama';
 import { db } from './db';
 
-var model = 'mannix/llama3.1-8b-abliterated' // 'kenneth85/llama-3-taiwan'
-export const ollama = new Ollama({ host:"https://api.natsumoe.com" })
+var model = 'llama3.2' // 'kenneth85/llama-3-taiwan'
+export const ollama = new Ollama({ host: "https://api.natsumoe.com" })
 export class Api {
     static async chat(id: string, text: string) {
         var chat = await this.start(id)
@@ -14,18 +14,14 @@ export class Api {
     }
     static async start(id: string, text = '你是AI助手並且用繁體中文回復所有問題') {
         var chat = await db.Chat.FindUpsert({ id, model }, { id })
-        if(chat.messages.length == 0) {
-            var msg = await db.ChatMessage.save({ role: 'system', content: `${text}`.trim(), id: chat.messages.length ?? 0 })
-            msg.chat = chat.resolve()
-            await msg.save()
-        }
-        return chat
+        if (chat.messages && chat.messages.length != 0) return chat
+        var msg = await db.ChatMessage.save({ role: 'system', content: `${text}`.trim(), id: chat.messages.length ?? 0 })
+        chat.messages = [msg]
+        return await chat.save()
     }
-    static async Func(id: string, text: string) {
-        var chat = await db.Chat.FindUpsert({ id })
-        chat.messages.push(await db.ChatMessage.save({ role: 'user', content: `${text}`.trim(), id: chat.messages.length }))
-        const result = (await ollama.chat({
-            ...chat, tools: [{
+    static async Func(content: string) {
+        const r = (await ollama.chat({
+            model, messages: [{ role: 'user', content }], tools: [{
                 type: "function",
                 function: {
                     name: "which_is_bigger",
@@ -46,6 +42,7 @@ export class Api {
                     },
                 },
             }]
-        }))
+        })).message.tool_calls[0].function.arguments
+        console.log(r.n, r.m, r.n > r.m)
     }
 }
