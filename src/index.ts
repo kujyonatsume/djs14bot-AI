@@ -1,5 +1,4 @@
 import './global-addon'
-import { ollama, Api } from './Chatapi';
 import { DatabaseInit } from './db';
 import { DiscordStart } from './discord';
 import config from "./config";
@@ -9,7 +8,6 @@ Main()
 async function Main() {
     await DatabaseInit()
     await DiscordStart(config.token2)
-
 }
 
 /*

@@ -1,4 +1,4 @@
-import { AttachmentBuilder, Client, codeBlock, Collection, EmbedBuilder, inlineCode, Interaction, Routes, TextChannel } from "discord.js";
+import { AttachmentBuilder, Client, codeBlock, Collection, EmbedBuilder, Events, inlineCode, Interaction, Routes, TextChannel } from "discord.js";
 import * as AppModule from "./Commands";
 import { commands, IOption, count, OptionAnd, Module } from "./decorator";
 
@@ -13,13 +13,21 @@ export async function DiscordStart(token: string, guildId?: string) {
             const mod = new Mod(c)
             modules.set(key.toLowerCase(), mod)
             await mod.init()
+            
         }
         let size = (await c.application.commands.set((commands as any).filter((x: { only: any; }) => !x.only))).size
         if (c.guilds.cache.has(guildId))
             size += (await c.application.commands.set((commands as any).filter((x: { only: any; }) => x.only), guildId)).size
         console.log(`已註冊 ${size} 個模組 總共 ${count} 個指令`)
-
+        
         console.log(`${c.user.username} 初始化完成`)
+        c.on('messageCreate', async message => {
+            if(message.author.bot) return
+            for (const call of modules.map(x => x.messageCreate)) {
+                if(call) await call(message)
+            }
+        })
+
         c.on("interactionCreate", async interaction => {
 
             if (interaction.isAutocomplete()) {
@@ -37,7 +45,7 @@ export async function DiscordStart(token: string, guildId?: string) {
                     console.log()
                     console.log(`\n${new Date().toLocaleTimeString()}[command start] ${interaction.commandName} ${line}`);
 
-                    module.setInter(interaction)
+                    module.i = interaction
                     let options = subOptions.map((x => {
                         let d = interaction.options.get(x.name);
                         return x.name, d ? d[x.parse] || d.value : null
