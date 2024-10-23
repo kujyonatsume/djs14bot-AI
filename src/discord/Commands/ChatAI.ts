@@ -2,8 +2,8 @@ import { db } from "../../db";
 import { Command, Group, Module, Option, SubCommand } from "../decorator";
 import { inlineCode, Message, OmitPartialGroupDMChannel } from 'discord.js';
 import { Api } from "../../Chatapi";
-var wait = false
-@Group({ name: 'ai-chat', local: "聊天", permission: 'Administrator' })
+var wait = false, group = { name: 'ai-chat', local: "聊天" }
+@Group({ ...group, permission: 'Administrator' })
 export class AIChat extends Module {
 
     @SubCommand({ local: "新聊天室" })
