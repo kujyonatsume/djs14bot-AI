@@ -7,7 +7,7 @@ var messages = [{ role: 'system', content: `你是AI助手並且用繁體中文�
 Main()
 async function Main() {
     await DatabaseInit()
-    await DiscordStart(config.token2)
+    await DiscordStart(config.token)
 }
 
 /*

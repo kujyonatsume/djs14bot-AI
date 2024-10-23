@@ -1,7 +1,7 @@
 import { Ollama } from 'ollama';
 import { db } from './db';
 
-export const ollama = new Ollama({ host: "https://api.natsumoe.com" })
+export const ollama = new Ollama({ host: "http://127.0.0.1:11434" })
 export enum modelType {
     abliterated31 = "mannix/llama3.1-8b-abliterated",
     chinese3 = "jack/llama3-8b-chinese",
