@@ -125,6 +125,7 @@ export class Module {
     }
 
 }
+
 export interface IOption {
     className: string
     orgName: string
@@ -151,6 +152,7 @@ export interface IOption {
 
     options?: IOption[]
 }
+
 export interface Named {
     name: string
     local: string
