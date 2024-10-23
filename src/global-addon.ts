@@ -20,6 +20,29 @@ Array.prototype.groupBy = function <T>(this: T[], fn: (v: T, i: number) => Prope
 }
 
 declare module "discord.js" {
+    export interface EventFunc {
+        init(): Awaited<Promise<any>>;
+        debug?(message: string): Awaited<Promise<any>>;
+        warn?(message: string): Awaited<Promise<any>>;
+        error?(error: Error): Awaited<Promise<any>>;
+        guildBanAdd?(ban: GuildBan): Awaited<Promise<any>>;
+        guildBanRemove?(ban: GuildBan): Awaited<Promise<any>>;
+        guildCreate?(guild: Guild): Awaited<Promise<any>>;
+        guildDelete?(guild: Guild): Awaited<Promise<any>>;
+        guildMemberAdd?(member: GuildMember): Awaited<Promise<any>>;
+        guildMemberAvailable?(member: GuildMember | PartialGuildMember): Awaited<Promise<any>>;
+        guildMemberRemove?(member: GuildMember | PartialGuildMember): Awaited<Promise<any>>;
+        guildMemberUpdate?(oldMember: GuildMember | PartialGuildMember, newMember: GuildMember): Awaited<Promise<any>>;
+        interactionCreate?(interaction: Interaction): Awaited<Promise<any>>;
+        inviteCreate?(invite: Invite): Awaited<Promise<any>>;
+        messageCreate?(message: Message): Awaited<Promise<any>>;
+        messageDelete?(message: Message | PartialMessage): Awaited<Promise<any>>;
+        messageReactionAdd?(reaction: MessageReaction | PartialMessageReaction, user: User | PartialUser): Awaited<Promise<any>>;
+        messageReactionRemove?(reaction: MessageReaction | PartialMessageReaction, user: User | PartialUser): Awaited<Promise<any>>;
+        messageUpdate?(oldMessage: Message | PartialMessage, newMessage: Message | PartialMessage): Awaited<Promise<any>>;
+        userUpdate?(oldUser: User | PartialUser, newUser: User): Awaited<Promise<any>>;
+        voiceStateUpdate?(oldState: VoiceState, newState: VoiceState): Awaited<Promise<any>>;
+    }
     export interface Message {
         emojiParse(): void;
         emojis: Emoji[];

@@ -10,6 +10,9 @@ export class Chat extends IdxEntity {
     @Column({ nullable: false })
     model: string;
 
+    @Column({ default: true })
+    enable: boolean;
+
     @OneToMany(() => ChatMessage, message => message.chat, { eager: true })
     messages: ChatMessage[];
 
