@@ -1,7 +1,7 @@
 import { Ollama } from 'ollama';
 import { db } from './db';
 
-var model = 'llama3.2' // 'kenneth85/llama-3-taiwan'
+var model = 'kenneth85/llama-3-taiwan' // 'kenneth85/llama-3-taiwan'
 export const ollama = new Ollama({ host: "https://api.natsumoe.com" })
 export class Api {
     static async chat(id: string, text: string) {
