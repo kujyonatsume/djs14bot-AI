@@ -1,4 +1,4 @@
-import { AttachmentBuilder, Client, codeBlock, Collection, EmbedBuilder, Events, inlineCode, Interaction, Routes, TextChannel } from "discord.js";
+import { Client, Collection, Interaction } from "discord.js";
 import * as AppModule from "./Commands";
 import { commands, IOption, count, OptionAnd, Module } from "./decorator";
 
