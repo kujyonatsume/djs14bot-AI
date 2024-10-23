@@ -82,6 +82,7 @@ export class Module {
     voiceStateUpdate?(oldState: VoiceState, newState: VoiceState): Awaited<Promise<any>>;
     public i: ChatInputCommandInteraction
     constructor(public client: Client) { }
+    get isOwner() { return this.i.user.id == this.client.application.owner.id }
     get Embed() {
         return new EmbedBuilder()
     }
