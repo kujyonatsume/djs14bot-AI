@@ -3,6 +3,15 @@ import { db } from './db';
 
 var model = 'kenneth85/llama-3-taiwan' // 'kenneth85/llama-3-taiwan'
 export const ollama = new Ollama({ host: "https://api.natsumoe.com" })
+export enum modelType {
+    abliterated31 = "mannix/llama3.1-8b-abliterated",
+    chinese3 = "jack/llama3-8b-chinese",
+    llama31 = "shareai/llama3.1-dpo-zh",
+    llama32 = "llama3.2",
+    abliteratedmeta = "dagbs/meta-llama-3.1-8b-instruct-abliterated",
+    abliteratedtaiwan = "kenneth85/llama-3-taiwan",
+    
+}
 export class Api {
     static async chat(id: string, text: string) {
         var chat = await this.start(id)
