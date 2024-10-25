@@ -1,3 +1,4 @@
 node_modules
 data/*
+chat/*.json
 !*temp.*
