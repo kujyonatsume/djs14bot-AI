@@ -15,6 +15,7 @@
       "djs-bot": "file:",
       "jsonpath": "^1.1.1",
       "ollama": "^0.5.9",
+      "ollama-node": "^0.1.28",
       "reflect-metadata": "^0.2.2",
       "typeorm": "^0.3.20"
    }
