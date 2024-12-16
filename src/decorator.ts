@@ -1,5 +1,5 @@
 import "reflect-metadata"
-import "../global-addon"
+import "../src/global-addon"
 
 import {
     ChannelType as CT,
@@ -20,7 +20,6 @@ import {
     ChatInputCommandInteraction,
     EmbedBuilder,
     MessagePayload,
-    Client,
     PermissionsBitField,
     PermissionResolvable,
     InteractionReplyOptions,
@@ -39,7 +38,10 @@ import {
     PartialMessageReaction,
     PartialUser,
     User,
-    VoiceState
+    VoiceState,
+    ButtonBuilder,
+    ButtonStyle,
+    ButtonComponent
 } from "discord.js";
 
 interface IGroup { name: string, local?: string }
@@ -49,10 +51,10 @@ export type OptionAnd<T = SlashBuilder | SubGroupBuilder | SubBuilder> = IOption
 var subs: SubBuilder[] = []
 var opts: { set(name: string): IOption }[] = []
 const dType = { attachment: AO, boolean: BO, channel: CO, number: NO, role: RO, string: SO, user: UO, member: UO }
-
+type Button = ButtonBuilder & { update?(x: ButtonComponent): ButtonComponent }
 export var count = 0
 export var commands: SlashBuilder[] = []
-
+export var buttons: Record<string, Button> = {}
 type OptionType = keyof typeof dType
 type Constructor<T = any> = Function & { new(...args: any[]): T };
 type AllowChannel = Exclude<CT, CT.DM | CT.GroupDM | CT.GuildDirectory>
@@ -81,8 +83,7 @@ export class Module {
     userUpdate?(oldUser: User | PartialUser, newUser: User): Awaited<Promise<any>>;
     voiceStateUpdate?(oldState: VoiceState, newState: VoiceState): Awaited<Promise<any>>;
     public i: ChatInputCommandInteraction
-    constructor(public client: Client) { }
-    get isOwner() { return this.i.user.id == this.client.application.owner.id }
+    get isOwner() { return this.i.user.id == this.i.client.application.owner.id }
     get Embed() {
         return new EmbedBuilder()
     }
@@ -206,6 +207,14 @@ export function Command(o: Partial<Named & CmdPerm> = {}) {
     }
 }
 
+export function Button(style: keyof typeof ButtonStyle, o?: (x: Button) => Button) {
+    return (target: Module, key: string, descriptor: PropertyDescriptor) => {
+        const name = `${target.constructor.name.toLowerCase()}:${key}`
+        let btn = new ButtonBuilder().setCustomId(name).setStyle(ButtonStyle[style])
+        buttons[name] = o ? o(btn) : btn
+    }
+}
+
 export function SubCommand(o: Partial<Named & { group?: IGroup }> = {}) {
     return (target: Module, key: string, descriptor: PropertyDescriptor) => {
         subs.push(CreateCmd(target, key, new SubBuilder(o.group), o))
@@ -215,14 +224,14 @@ export function SubCommand(o: Partial<Named & { group?: IGroup }> = {}) {
 
 function usePerm<T extends SlashBuilder>(slash: T, o: Partial<CmdPerm>) {
     if (o.permission) slash.setDefaultMemberPermissions(new PermissionsBitField(o.permission).bitfield)
-    return Object.assign(slash.setNSFW(Boolean(o.nsfw)).setContexts(0,1), { only: Boolean(o.only) })
+    return Object.assign(slash.setNSFW(Boolean(o.nsfw)).setContexts(0, 1), { only: Boolean(o.only) })
 }
 
 export function Group(o: Partial<Named & CmdPerm> = {}) {
     return (target: Constructor<Module>) => {
         if (subs.length == 0) return
         const slash = Create(new SlashBuilder(), target.name, o)
-        for (const [name, sub] of Object.entries(Object.groupBy(subs, x => x.group?.name ?? "0" ))) {
+        for (const [name, sub] of Object.entries(Object.groupBy(subs, x => x.group?.name ?? "0"))) {
             if (name != "0") {
                 const group = Create(new SubGroupBuilder(), name, sub[0].group)
                 count += group.options.push(...sub)

@@ -1,4 +1,5 @@
 export * from "./ChatAI"
+export * from "./Music"
 /*
 import { Command, Group, Module, Option, SubCommand, SubGroup } from "../decorator";
 

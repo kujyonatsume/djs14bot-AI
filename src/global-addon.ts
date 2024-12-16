@@ -1,7 +1,8 @@
 import { randomInt } from 'crypto';
-import { Client, Emoji, Message, User } from 'discord.js';
+import { Emoji, Message } from 'discord.js';
 
 declare global {
+    var input: (q?: string) => Promise<string>
     interface Array<T> {
         groupBy(callback: (value: T, i: number) => PropertyKey): Partial<Record<PropertyKey, T[]>>
     }
@@ -11,6 +12,11 @@ declare global {
     interface PromiseConstructor {
         delay(ms: number): Promise<void>
     }
+}
+
+globalThis.input = (q?: string) => {
+    if (q) process.stdout.write(q)
+    return new Promise<string>((res, reg) => process.stdin.once("data", data => res(`${data}`.trim())))
 }
 
 Math.randomInt = randomInt

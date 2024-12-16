@@ -1,9 +1,13 @@
-import { Chat } from "../../Chat/Api";
+import { Chat } from "../service/ChatAI";
+import config from "../config";
 import { Group, Module, Option, SubCommand } from "../decorator";
 import { Message, OmitPartialGroupDMChannel } from "discord.js";
 
 @Group({ name: 'ai-chat', local: "聊天", permission: 'Administrator' })
 export class AIChat extends Module {
+    async init() {
+        Chat.ReloadTools()
+    }
     @SubCommand({ local: "新聊天室" })
     async cteate(@Option({ local: "提示詞", required: false }) prompt: string) {
         if (Chat.Create(this.i.channelId, prompt))
@@ -23,11 +27,21 @@ export class AIChat extends Module {
         await this.ErrorEmbed(`聊天室不存在`)
     }
     async messageCreate(message: OmitPartialGroupDMChannel<Message<boolean>>) {
-        if(!message.content.startsWith(message.client.user.toString())) return
+        if (!message.content.startsWith(message.client.user.toString())) return
         var chat = Chat.Get(message.channelId)
         if (chat?.enable != true) return
         chat.enable = false
-        var content = message.content.replace(message.client.user.toString(), "")
+        var content = message.content.replace(message.client.user.toString(), "").trim()
+        console.log(message.author.id === config.ownerId);
+
+        if (message.author.id === config.ownerId) {
+            if (content == "重載") {
+                Chat.ReloadTools()
+                message.channel.sendTyping()
+                message.channel.send({ embeds: [this.Embed.setColor('Green').setDescription("重新載入")] })
+                return
+            }
+        }
         console.log(message.author.displayName + ' : ' + content)
         message.channel.sendTyping()
         var result = await Chat.Send(message.channelId, content)
